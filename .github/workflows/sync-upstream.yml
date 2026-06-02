@@ -100,11 +100,6 @@ jobs:
             # Reuse an existing open PR for this (head, base) if present.
             n=$(gh api "repos/$REPO/pulls?head=$OWNER:$head&base=$base&state=open" \
                   --jq '.[0].number // empty')
-            # TEMP (demo-only, NOT in the real workflow): widen the race window
-            # so an externally-created PR lands between the lookup above and the
-            # POST below, deterministically exercising the 422 fallback path.
-            echo "TEMP: entering 150s race window (lookup returned n='$n')" >&2
-            sleep 150
             if [ -z "$n" ]; then
               # 422 fallback: a racing run may have just created it.
               n=$(gh api "repos/$REPO/pulls" -X POST \
